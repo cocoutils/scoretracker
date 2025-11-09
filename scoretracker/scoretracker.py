@@ -39,35 +39,41 @@ class ScoreTracker(commands.Cog):
         except Exception as e:
             print(f"[ScoreTracker] Failed to save scores: {e}")
 
-    async def lbupdate(self):
-        """Update or send the leaderboard embed."""
-        channel = self.bot.get_channel(self.leaderboard_channel_id)
-        if not channel:
-            print("[ScoreTracker] Leaderboard channel not found.")
+async def lbupdate(self):
+    """Update or send the leaderboard embed."""
+    channel = self.bot.get_channel(self.leaderboard_channel_id)
+    if not channel:
+        print("[ScoreTracker] Leaderboard channel not found.")
+        return
+
+    # Sort scores descending
+    sorted_scores = sorted(self.scores.items(), key=lambda x: x[1], reverse=True)
+
+    # Add ranking numbers
+    description_lines = []
+    for i, (user, points) in enumerate(sorted_scores, start=1):
+        description_lines.append(f"{i}. **{user}**: {points} points")
+
+    description = "\n".join(description_lines)
+
+    embed = discord.Embed(
+        title="Swim Reapers Leaderboard",
+        description=description or "No scores yet.",
+        color=0x000000
+    )
+
+    if self.leaderboard_message_id:
+        try:
+            msg = await channel.fetch_message(self.leaderboard_message_id)
+            await msg.edit(embed=embed)
             return
+        except discord.NotFound:
+            self.leaderboard_message_id = None
 
-        # Sort scores descending
-        sorted_scores = sorted(self.scores.items(), key=lambda x: x[1], reverse=True)
-        description = "\n".join(f"**{user}**: {points} points" for user, points in sorted_scores)
+    msg = await channel.send(embed=embed)
+    self.leaderboard_message_id = msg.id
+    print("[ScoreTracker] Leaderboard message sent/updated.")
 
-        embed = discord.Embed(
-            title="Swim Reapers Leaderboard",
-            description=description or "No scores yet.",
-            color=0x000000
-        )
-
-        # Edit existing or send new
-        if self.leaderboard_message_id:
-            try:
-                msg = await channel.fetch_message(self.leaderboard_message_id)
-                await msg.edit(embed=embed)
-                return
-            except discord.NotFound:
-                self.leaderboard_message_id = None
-
-        msg = await channel.send(embed=embed)
-        self.leaderboard_message_id = msg.id
-        print("[ScoreTracker] Leaderboard message sent/updated.")
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
