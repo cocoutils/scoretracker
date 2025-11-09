@@ -1,0 +1,15 @@
+{
+  "name": "ScoreTracker",
+  "author": ["YourName"],
+  "description": "Tracks scores from a channel and maintains a leaderboard.",
+  "install_msg": "ScoreTracker cog loaded. Messages in the source channel will now track points.",
+  "short": "Leaderboard tracker",
+  "end_user_data_statement": "Stores in-memory scores, no persistent personal data.",
+  "min_bot_version": "3.9.0",
+  "max_bot_version": "3.99.99",
+  "min_python_version": [3, 8, 0],
+  "hidden": false,
+  "disabled": false,
+  "requirements": ["discord.py"],
+  "tags": ["leaderboard", "score", "tracker"]
+}
