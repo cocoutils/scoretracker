@@ -54,7 +54,7 @@ class ScoreTracker(commands.Cog):
 
         normalized = unicodedata.normalize('NFKC', message.content)
 
-        # Regex to match scores only
+        # Regex to match only webhook score messages
         match = re.match(r"(?P<user>.+?):\s*ѕсоrеd\s*(?P<points>[\d,]+)", normalized, re.IGNORECASE)
         if match:
             username = match.group('user').strip("'\"")  # remove surrounding quotes
@@ -62,9 +62,9 @@ class ScoreTracker(commands.Cog):
 
             self.scores[username] += points
             print(f"Updated {username} with {points} points. Total: {self.scores[username]}")
-            await self.update_leaderboard()
+            await self.lbupdate()
 
-    @commands.command()
+    @commands.command(name="lbrebuild")
     @commands.is_owner()
     async def lbrebuild(self, ctx):
         """Parse old messages and rebuild the leaderboard."""
@@ -85,5 +85,5 @@ class ScoreTracker(commands.Cog):
                 points = int(match.group('points').replace(',', ''))
                 self.scores[username] += points
 
-        await self.update_leaderboard()
+        await self.lbupdate()
         await ctx.send("Leaderboard rebuilt from channel history!")
