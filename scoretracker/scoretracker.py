@@ -27,7 +27,7 @@ class ScoreTracker(commands.Cog):
         embed = discord.Embed(
             title="Swim Reapers Leaderboard",
             description=description or "No scores yet.",
-            color=discord.Color.black()
+            color=0x000000
         )
 
         # Edit existing message or send new
