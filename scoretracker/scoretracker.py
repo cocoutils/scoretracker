@@ -46,7 +46,7 @@ class ScoreTracker(commands.Cog):
             return
 
         normalized = unicodedata.normalize('NFKC', message.content)
-        match = re.match(r"(?P<user>\w+):\s*scored\s*(?P<points>\d+)\s*points", normalized, re.IGNORECASE)
+        match = re.match(r"(?P<user>.+?):\s*ѕсоrеd\s*(?P<points>[\d,]+)
         if match:
             username = match.group('user')
             points = int(match.group('points'))
