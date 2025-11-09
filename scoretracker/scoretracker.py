@@ -14,7 +14,7 @@ class ScoreTracker(commands.Cog):
         self.scores = defaultdict(int)
         self.leaderboard_message_id = None  # stores the embed message ID
 
-    async def update_leaderboard(self):
+    async def lbupdate(self):
         """Update or send the leaderboard embed."""
         leaderboard_channel = self.bot.get_channel(self.leaderboard_channel_id)
         if not leaderboard_channel:
@@ -66,7 +66,7 @@ class ScoreTracker(commands.Cog):
 
     @commands.command()
     @commands.is_owner()
-    async def rebuild_leaderboard(self, ctx):
+    async def lbrebuild(self, ctx):
         """Parse old messages and rebuild the leaderboard."""
         channel = self.bot.get_channel(self.source_channel_id)
         if not channel:
