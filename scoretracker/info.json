@@ -1,6 +1,6 @@
 {
   "name": "ScoreTracker",
-  "author": ["YourName"],
+  "author": ["Nicole"],
   "description": "Tracks scores from a channel and maintains a leaderboard.",
   "install_msg": "ScoreTracker cog loaded. Messages in the source channel will now track points.",
   "short": "Leaderboard tracker",
