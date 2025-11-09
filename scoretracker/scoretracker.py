@@ -40,7 +40,7 @@ class ScoreTracker(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
-        if message.author.bot:
+        if message.author.bot and not message.webhook_id:
             return
         if message.channel.id != self.source_channel_id:
             return
