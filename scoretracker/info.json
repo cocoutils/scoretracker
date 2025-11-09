@@ -5,7 +5,7 @@
   "install_msg": "ScoreTracker cog loaded. Messages in the source channel will now track points.",
   "short": "Leaderboard tracker",
   "end_user_data_statement": "Stores in-memory scores, no persistent personal data.",
-  "min_bot_version": "3.9.0",
+  "min_bot_version": "3.5.22",
   "max_bot_version": "3.99.99",
   "min_python_version": [3, 8, 0],
   "hidden": false,
