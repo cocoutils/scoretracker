@@ -54,8 +54,12 @@ class ScoreTracker(commands.Cog):
 
         normalized = unicodedata.normalize('NFKC', message.content)
 
-        # Regex to match only webhook score messages
-        match = re.match(r"(?P<user>.+?):\s*ѕсоrеd\s*(?P<points>[\d,]+)", normalized, re.IGNORECASE)
+        # Regex to match only webhook score messages (just ѕсоrеd + number)
+        match = re.search(
+            r"['\"]?(?P<user>.+?)['\"]?:\s*ѕсоrеd\s*(?P<points>[\d,]+)",
+            normalized
+        )
+
         if match:
             username = match.group('user').strip("'\"")  # remove surrounding quotes
             points = int(match.group('points').replace(',', ''))
@@ -75,11 +79,16 @@ class ScoreTracker(commands.Cog):
 
         self.scores.clear()
         async for message in channel.history(limit=None):
+            # Ignore non-webhook bot messages
             if message.author.bot and not message.webhook_id:
                 continue
 
             normalized = unicodedata.normalize('NFKC', message.content)
-            match = re.match(r"(?P<user>.+?):\s*ѕсоrеd\s*(?P<points>[\d,]+)", normalized)
+            match = re.search(
+                r"['\"]?(?P<user>.+?)['\"]?:\s*ѕсоrеd\s*(?P<points>[\d,]+)",
+                normalized
+            )
+
             if match:
                 username = match.group('user').strip("'\"")
                 points = int(match.group('points').replace(',', ''))
