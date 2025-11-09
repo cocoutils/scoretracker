@@ -46,8 +46,8 @@ class ScoreTracker(commands.Cog):
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
         # Ignore normal bots but allow webhooks
-        if message.author.bot and not message.webhook_id:
-            return
+        if message.author.bot:
+            pass
 
         if message.channel.id != self.source_channel_id:
             return
