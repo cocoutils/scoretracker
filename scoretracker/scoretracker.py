@@ -18,7 +18,6 @@ class ScoreTracker(commands.Cog):
         self.scores = defaultdict(int)
         self.leaderboard_message_id = None
 
-        # Load persisted scores if available
         self._load_scores()
 
     def _load_scores(self):
@@ -39,41 +38,38 @@ class ScoreTracker(commands.Cog):
         except Exception as e:
             print(f"[ScoreTracker] Failed to save scores: {e}")
 
-async def lbupdate(self):
-    """Update or send the leaderboard embed."""
-    channel = self.bot.get_channel(self.leaderboard_channel_id)
-    if not channel:
-        print("[ScoreTracker] Leaderboard channel not found.")
-        return
-
-    # Sort scores descending
-    sorted_scores = sorted(self.scores.items(), key=lambda x: x[1], reverse=True)
-
-    # Add ranking numbers
-    description_lines = []
-    for i, (user, points) in enumerate(sorted_scores, start=1):
-        description_lines.append(f"{i}. **{user}**: {points} points")
-
-    description = "\n".join(description_lines)
-
-    embed = discord.Embed(
-        title="Swim Reapers Leaderboard",
-        description=description or "No scores yet.",
-        color=0x000000
-    )
-
-    if self.leaderboard_message_id:
-        try:
-            msg = await channel.fetch_message(self.leaderboard_message_id)
-            await msg.edit(embed=embed)
+    async def lbupdate(self):
+        """Update or send the leaderboard embed."""
+        channel = self.bot.get_channel(self.leaderboard_channel_id)
+        if not channel:
+            print("[ScoreTracker] Leaderboard channel not found.")
             return
-        except discord.NotFound:
-            self.leaderboard_message_id = None
 
-    msg = await channel.send(embed=embed)
-    self.leaderboard_message_id = msg.id
-    print("[ScoreTracker] Leaderboard message sent/updated.")
+        sorted_scores = sorted(self.scores.items(), key=lambda x: x[1], reverse=True)
 
+        description_lines = []
+        for i, (user, points) in enumerate(sorted_scores, start=1):
+            description_lines.append(f"{i}. **{user}**: {points} points")
+
+        description = "\n".join(description_lines)
+
+        embed = discord.Embed(
+            title="Swim Reapers Leaderboard",
+            description=description or "No scores yet.",
+            color=0x000000
+        )
+
+        if self.leaderboard_message_id:
+            try:
+                msg = await channel.fetch_message(self.leaderboard_message_id)
+                await msg.edit(embed=embed)
+                return
+            except discord.NotFound:
+                self.leaderboard_message_id = None
+
+        msg = await channel.send(embed=embed)
+        self.leaderboard_message_id = msg.id
+        print("[ScoreTracker] Leaderboard message sent/updated.")
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
@@ -82,26 +78,20 @@ async def lbupdate(self):
 
         normalized = unicodedata.normalize("NFKC", message.content)
         if "ѕсоrеd" not in normalized:
-            print(f"[ScoreTracker] Message ignored (no 'ѕсоrеd'): {normalized}")
             return
 
         match = re.search(r"['\"]?(?P<user>.+?)['\"]?:?\s*ѕсоrеd\s*(?P<points>[\d,]+)", normalized)
         if not match:
-            print(f"[ScoreTracker] Regex failed: {normalized}")
             return
 
         username = match.group("user").strip("'\"")
         points = int(match.group("points").replace(",", ""))
 
-        # Keep only top score per user
         previous_score = self.scores.get(username, 0)
         if points > previous_score:
             self.scores[username] = points
-            print(f"[ScoreTracker] {username} updated top score: {points}")
-            self._save_scores()  # persist scores
+            self._save_scores()
             await self.lbupdate()
-        else:
-            print(f"[ScoreTracker] {username} score {points} ignored (top score {previous_score})")
 
     @commands.command(name="lbrebuild")
     @commands.is_owner()
@@ -122,11 +112,9 @@ async def lbupdate(self):
             if match:
                 username = match.group("user").strip("'\"")
                 points = int(match.group("points").replace(",", ""))
-                # Top score logic
                 previous_score = self.scores.get(username, 0)
                 if points > previous_score:
                     self.scores[username] = points
-                    print(f"[ScoreTracker][Rebuild] {username} top score set to {points}")
 
         self._save_scores()
         await self.lbupdate()
